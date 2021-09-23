@@ -211,18 +211,18 @@ class Taxii2Connector:
         Args:
             bundle (list(dict)): STIX2 bundle represented as a list of dicts
         """
-
-        self.helper.log_info(
-            f"Sending Bundle to server with " f'{len(bundle["objects"])} objects'
-        )
-        try:
-            self.helper.send_stix2_bundle(
-                json.dumps(bundle),
-                update=self.update_existing_data,
+        if "objects" in bundle:
+            self.helper.log_info(
+                f"Sending Bundle to server with " f'{len(bundle["objects"])} objects'
             )
+            try:
+                self.helper.send_stix2_bundle(
+                    json.dumps(bundle),
+                    update=self.update_existing_data,
+                )
 
-        except Exception as e:
-            self.helper.log_error(str(e))
+            except Exception as e:
+                self.helper.log_error(str(e))
 
     def _get_collection(self, root, coll_title):
         """
