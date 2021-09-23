@@ -24,7 +24,7 @@ class ImportFileStix:
         file_uri = self.helper.opencti_url + file_fetch
         self.helper.log_info(f"Importing the file {file_uri}")
 
-        file_content = self.helper.api.fetch_opencti_file(file_uri)
+        file_content = self.helper.api.fetch_opencti_file(file_uri, binary=True)
         if data["file_mime"] == "text/xml":
             self.helper.log_debug("Stix1 file. Attempting conversion")
             initialize_options()
