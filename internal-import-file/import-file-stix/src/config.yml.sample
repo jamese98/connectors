@@ -10,3 +10,6 @@ connector:
   auto: false # Enable/disable auto-import of file
   confidence_level: 15 # From 0 (Unknown) to 100 (Fully trusted)
   log_level: 'info'
+
+import_stix:
+  create_report: true
