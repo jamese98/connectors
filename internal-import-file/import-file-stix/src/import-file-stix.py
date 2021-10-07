@@ -5,7 +5,10 @@ from typing import List, Dict
 from stix2 import Report, Bundle, parse
 from stix2elevator import elevate
 from stix2elevator.options import initialize_options
-from pycti import OpenCTIConnectorHelper
+from stix.core import STIXPackage
+import stix.report as stix1_report
+from pycti import OpenCTIConnectorHelper, get_config_variable
+from io import BytesIO
 
 
 class ImportFileStix:
@@ -18,6 +21,11 @@ class ImportFileStix:
             else {}
         )
         self.helper = OpenCTIConnectorHelper(config)
+        self.create_report = get_config_variable(
+            "IMPORT_STIX_CREATE_REPORT",
+            ["import_stix", "create_report"],
+            config,
+        )
 
     def _process_message(self, data: Dict) -> str:
         file_fetch = data["file_fetch"]
@@ -27,6 +35,23 @@ class ImportFileStix:
         file_content = self.helper.api.fetch_opencti_file(file_uri, binary=True)
         if data["file_mime"] == "text/xml":
             self.helper.log_debug("Stix1 file. Attempting conversion")
+            if self.create_report:
+                package = STIXPackage.from_xml(BytesIO(file_content))
+                if package.stix_header.title and package.reports is None:
+                    report = stix1_report.Report(header=stix1_report.Header(title=package.stix_header.title,
+                                                                            description=package.stix_header.description or None,
+                                                                            intents=package.stix_header.package_intents),
+                                                campaigns=stix1_report.Campaigns(package.campaigns) or None,
+                                                courses_of_action=stix1_report.CoursesOfAction(package.courses_of_action) or None,
+                                                exploit_targets=stix1_report.ExploitTargets(package.exploit_targets) or None,
+                                                incidents=stix1_report.Incidents(package.incidents) or None,
+                                                indicators=stix1_report.Indicators(package.indicators) or None,
+                                                threat_actors=stix1_report.ThreatActors(package.threat_actors) or None,
+                                                ttps=stix1_report.TTPs(package.ttps) or None)
+
+                    package.add(report)
+                    file_content=package.to_xml()
+
             initialize_options()
             file_content = elevate(file_content)
 

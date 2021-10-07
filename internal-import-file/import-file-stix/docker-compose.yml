@@ -12,4 +12,5 @@ services:
       - CONNECTOR_AUTO=false # Enable/disable auto-import of file
       - CONNECTOR_CONFIDENCE_LEVEL=15 # From 0 (Unknown) to 100 (Fully trusted)
       - CONNECTOR_LOG_LEVEL=info
+      - IMPORT_STIX_CREATE_REPORT=True # Create STIX 2.x report object when elevating from STIX 1.x using <STIX_Header> values
     restart: always
