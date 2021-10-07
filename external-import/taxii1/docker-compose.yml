@@ -1,0 +1,24 @@
+version: '3'
+services:
+  connector-taxii1:
+    image: opencti/connector-taxii1:5.0.0
+    environment:
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=CHANGME
+      - CONNECTOR_ID=CHANGEME
+      - CONNECTOR_TYPE=EXTERNAL_IMPORT
+      - CONNECTOR_NAME=TAXII1
+      - CONNECTOR_SCOPE=ipv4-addr,ipv6-addr,vulnerability,domain,url,file-sha256,file-md5,file-sha1
+      - CONNECTOR_CONFIDENCE_LEVEL=15 # From 0 (Unknown) to 100 (Fully trusted)
+      - CONNECTOR_UPDATE_EXISTING_DATA=true
+      - CONNECTOR_LOG_LEVEL=info
+      - TAXII1_DISCOVERY_URL=CHANGEME #required
+      - TAXII1_USERNAME=CHANGEME #required
+      - TAXII1_PASSWORD=CHANGEME
+      - TAXII1_V11=True #Is TAXII v1.1
+      - TAXII1_COLLECTIONS=* # required
+      - TAXII1_INITIAL_HISTORY= 24 # in hours
+      - TAXII1_INTERVAL=100 #required, in hours
+      - TAXII1_CREATE_REPORT=True
+      - VERIFY_SSL=true
+    restart: always
